@@ -6,13 +6,17 @@ const {
   getCategories,
   getCategory,
   updateCategory,
-  deleteCategory,
+  deleteCategory
 } = require("../services/categoryService");
 const { getCategoryValidator, createCategoryValidator, deleteCategoryValidator } = require("../utils/validators/categoryValidator");
+const subCategoryRoute= require('./subCategoryRoute');
+
+router.use("/:categoryid/subcategories", subCategoryRoute)
+
+
 router.post("/",createCategoryValidator, createCategory);
 router.get("/:id", getCategoryValidator, getCategory);
 router.get("/", getCategories);
 router.put("/:id", updateCategory);
 router.delete("/:id",deleteCategoryValidator, deleteCategory);
-
 module.exports = router;
