@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // @desc create a product
 // @route POST api/v1/products
@@ -14,162 +15,20 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
   res.status(201).json({ status: "success", data: product });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // @desc get all products
 // @route GET api/v1/products
 // @access public
 exports.getProducts = asyncHandler(async (req, res, next) => {
-  //pagination
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  //filteration
-  let filterObj = { ...req.query };
-  const execluded_queries = ["sort", "page", "limit", "fields", "keyword"];
-  execluded_queries.forEach((q) => delete filterObj[q]); //execlude unneeded queries from queryObj
-
-  let filterString = JSON.stringify(filterObj);
-  filterString = filterString.replace(
-    /\b(gte|gt|lt|lte)\b/g,
-    (match) => `$${match}`
-  );
-
-  //build the query
-  let query = Product.find(JSON.parse(filterString)).skip(skip).limit(limit);
-
-  //sorting
-  if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
-    query = query.sort(sortBy);
-  } else {
-    query = query.sort("-createdAt");
-  }
-
-  //field limiting
-  if (req.query.fields) {
-    const filterFields = req.query.fields.split(",").join(" ");
-    query = query.select(filterFields);
-  } else {
-    query = query.select("-__v");
-  }
-
-  //search
-if (req.query.keyword) {
-  const searchObj= {};
-  searchObj.$or = [
-    { name: { $regex: req.query.keyword, $options: "i" } },
-    { description: { $regex: req.query.keyword, $options: "i" } },
-  ];
-
-  query= query.find(searchObj);
-}
-
-
-  const products = await query;
-
-  res.status(200).json({ results: products.length, page, data: products });
+  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .filter()
+    .sort()
+    .fieldFilter()
+    .paginate()
+    .search();
+  //execute query
+  const products = await apiFeatures.mongooseQuery;
+  res.status(200).json({ results: products.length, data: products });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // @desc get a single product
 // @route GET api/v1/products
