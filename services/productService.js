@@ -8,11 +8,54 @@ const ApiError = require("../utils/apiError");
 // @route POST api/v1/products
 // @access private/admin
 exports.createProduct = asyncHandler(async (req, res, next) => {
-  req.body.slug= slugify(req.body.name);
+  req.body.slug = slugify(req.body.name);
   const product = await Product.create(req.body);
 
   res.status(201).json({ status: "success", data: product });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // @desc get all products
 // @route GET api/v1/products
@@ -23,9 +66,110 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const products = await Product.find({}).skip(skip).limit(limit);
+  //filteration
+  let filterObj = { ...req.query };
+  const execluded_queries = ["sort", "page", "limit", "fields", "keyword"];
+  execluded_queries.forEach((q) => delete filterObj[q]); //execlude unneeded queries from queryObj
+
+  let filterString = JSON.stringify(filterObj);
+  filterString = filterString.replace(
+    /\b(gte|gt|lt|lte)\b/g,
+    (match) => `$${match}`
+  );
+
+  //build the query
+  let query = Product.find(JSON.parse(filterString)).skip(skip).limit(limit);
+
+  //sorting
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort("-createdAt");
+  }
+
+  //field limiting
+  if (req.query.fields) {
+    const filterFields = req.query.fields.split(",").join(" ");
+    query = query.select(filterFields);
+  } else {
+    query = query.select("-__v");
+  }
+
+  //search
+if (req.query.keyword) {
+  const searchObj= {};
+  searchObj.$or = [
+    { name: { $regex: req.query.keyword, $options: "i" } },
+    { description: { $regex: req.query.keyword, $options: "i" } },
+  ];
+
+  query= query.find(searchObj);
+}
+
+
+  const products = await query;
+
   res.status(200).json({ results: products.length, page, data: products });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // @desc get a single product
 // @route GET api/v1/products
@@ -41,15 +185,10 @@ exports.getProduct = asyncHandler(async (req, res, next) => {
 // @route PUT api/v1/products
 // @access private
 exports.updateProduct = asyncHandler(async (req, res, next) => {
-  if(req.body.name)
-      req.body.slug= slugify(req.body.name);
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-    }
-  );
+  if (req.body.name) req.body.slug = slugify(req.body.name);
+  const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
   if (!product)
     return next(new ApiError(`No product found for ${req.params.id}`, 404));
 
