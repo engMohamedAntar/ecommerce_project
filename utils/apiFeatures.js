@@ -39,26 +39,45 @@ class ApiFeatures {
     return this;
   }
 
-  search() {
+  search(Model) {
     if (this.queryObj.keyword) {
       const searchObj = {};
-      searchObj.$or = [
-        { name: { $regex: this.queryObj.keyword, $options: "i" } },
-        { description: { $regex: this.queryObj.keyword, $options: "i" } },
-      ];
+      if (Model === "Product") {
+        searchObj.$or = [
+          { name: { $regex: this.queryObj.keyword, $options: "i" } },
+          { description: { $regex: this.queryObj.keyword, $options: "i" } },
+        ];
+      } else {
+        searchObj.$or = [
+          { name: { $regex: this.queryObj.keyword, $options: "i" } },
+        ];
+      }
 
       this.mongooseQuery = this.mongooseQuery.find(searchObj);
     }
     return this;
   }
 
-  paginate() {
+  paginate(countdocs) {
     const page = parseInt(this.queryObj.page) || 1;
     const limit = parseInt(this.queryObj.limit) || 10;
     const skip = (page - 1) * limit;
-    this.mongooseQuery= this.mongooseQuery.skip(skip).limit(limit);
+    this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
+
+    //pagination info
+    const paginationInfo = {};
+    //numOfPages
+    paginationInfo.numOfPages = Math.ceil(countdocs / limit);
+    //page
+    paginationInfo.page = page;
+    //prev
+    if (page > 1) paginationInfo.previous = page - 1;
+    //next
+    const lastIdx = page * limit;
+    if (lastIdx < countdocs) paginationInfo.next = page + 1;
+    this.paginationInfo = paginationInfo;
     return this;
   }
 }
 
-module.exports= ApiFeatures;
+module.exports = ApiFeatures;

@@ -19,15 +19,19 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 // @route GET api/v1/products
 // @access public
 exports.getProducts = asyncHandler(async (req, res, next) => {
+  const countdocs= await Product.countDocuments();
   const apiFeatures = new ApiFeatures(Product.find(), req.query)
     .filter()
     .sort()
     .fieldFilter()
-    .paginate()
-    .search();
+    .paginate(countdocs)
+    .search('Product');
+
+  const {mongooseQuery, paginationInfo}= apiFeatures;
   //execute query
-  const products = await apiFeatures.mongooseQuery;
-  res.status(200).json({ results: products.length, data: products });
+  const products = await mongooseQuery;
+  
+  res.status(200).json({ results: products.length, paginationInfo, data: products });
 });
 
 // @desc get a single product
