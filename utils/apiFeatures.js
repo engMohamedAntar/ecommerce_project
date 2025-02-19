@@ -39,10 +39,10 @@ class ApiFeatures {
     return this;
   }
 
-  search(Model) {
+  search(modelName) {
     if (this.queryObj.keyword) {
       const searchObj = {};
-      if (Model === "Product") {
+      if (modelName === "Product") {
         searchObj.$or = [
           { name: { $regex: this.queryObj.keyword, $options: "i" } },
           { description: { $regex: this.queryObj.keyword, $options: "i" } },
@@ -60,7 +60,7 @@ class ApiFeatures {
 
   paginate(countdocs) {
     const page = parseInt(this.queryObj.page) || 1;
-    const limit = parseInt(this.queryObj.limit) || 10;
+    const limit = parseInt(this.queryObj.limit) || 30;
     const skip = (page - 1) * limit;
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
 

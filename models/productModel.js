@@ -57,17 +57,24 @@ const ProductSchema = new mongoose.Schema(
     },
     ratingsQuantity: {
       type: Number,
-      default: 0
+      default: 0,
     },
     ratingsAverage: {
       type: Number,
       min: [1, "ratings must be in range 1:5"],
       max: [5, "ratings must be in range 1:5"],
-    }
+    },
   },
   {
     timestamps: true,
   }
 );
+ProductSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+    select: "name -_id",
+  });
+  next();
+});
 
 module.exports = mongoose.model("Product", ProductSchema);
