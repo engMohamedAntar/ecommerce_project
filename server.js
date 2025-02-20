@@ -1,4 +1,5 @@
 //server.js
+const path= require('path');
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
@@ -20,7 +21,7 @@ const app = express();
 
 //middlewares
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, 'uploads')));
 if (process.env.ENVIRONMENT === "developement") {
   app.use(morgan("tiny"));
 }
