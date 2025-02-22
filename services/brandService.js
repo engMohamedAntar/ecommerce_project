@@ -1,35 +1,24 @@
 //brandService.js
 const multer = require("multer");
-const sharp= require('sharp');
-const asyncHandler= require('express-async-handler');
+const sharp = require("sharp");
+const asyncHandler = require("express-async-handler");
 
 const Brand = require("../models/brandModel");
-const factoryHandler= require('./factoryHandler');
+const factoryHandler = require("./factoryHandler");
 const ApiError = require("../utils/apiError");
+const { uploadImage } = require("../middlewares/uploadImageMiddleware");
 
-//images
-const storage = multer.memoryStorage();
+exports.uploadImage= uploadImage('image');
 
-const fileFilter= (req, file, cb)=> {
-    if(file.mimetype.split('/')[0]=== 'image')
-        cb(null, true);
-    else
-        cb(new ApiError('accept images only',400), true)
-  }
-
-const upload = multer({ storage: storage, fileFilter: fileFilter  });
-
-exports.uploadImage= upload.single('image');
-
-exports.resizeImage= asyncHandler(async(req,res,next)=>{
-  const filename= `image-${Date.now()}.jpeg`;
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  const filename = `image-${Date.now()}.jpeg`;
   await sharp(req.file.buffer)
-  .resize(400,400)
-  .toFormat('jpeg')
-  .jpeg({quality: 80})
-  .toFile(`uploads/brands/${filename}`);
+    .resize(400, 400)
+    .toFormat("jpeg")
+    .jpeg({ quality: 80 })
+    .toFile(`uploads/brands/${filename}`);
 
-  req.body.image= filename;
+    req.body.image = filename;
   next();
 });
 

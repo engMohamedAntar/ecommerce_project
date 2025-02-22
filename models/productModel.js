@@ -29,7 +29,6 @@ const ProductSchema = new mongoose.Schema(
     priceAfterDiscount: Number,
     quantity: {
       type: Number,
-      required: true,
     },
     sold: {
       type: Number,
@@ -75,6 +74,33 @@ ProductSchema.pre(/^find/, function (next) {
     select: "name -_id",
   });
   next();
+});
+
+const setImageUrl= (doc)=>{
+  //set url for imageCover
+  if(doc.imageCover) {
+    const imgUrl= `${process.env.BASE_URL}/products/${doc.imageCover}`;
+    doc.imageCover= imgUrl;
+  }
+
+  //set url for images
+  if(doc.images) {
+    const images= [];
+    doc.images.forEach((img)=>{
+      const imgname= `${process.env.BASE_URL}/products/${img}`;
+      images.push(imgname);
+    })
+    doc.images= images;
+  }
+}
+
+// work for the create
+ProductSchema.post('save', function(doc) {
+  setImageUrl(doc);
+});
+// work for the findOne, find, update
+ProductSchema.post('init', function(doc) {
+  setImageUrl(doc);
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

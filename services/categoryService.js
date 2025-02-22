@@ -1,10 +1,27 @@
 //categoryService.js
+const sharp= require('sharp');
 const Category = require("../models/categoryModel");
-const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/apiError");
 const ApiFeatures = require("../utils/apiFeatures");
 const factoryHandler= require('./factoryHandler');
+const {uploadImage}= require('../middlewares/uploadImageMiddleware');
+
+exports.uploadImage= uploadImage('image');
+
+exports.resizeImage = asyncHandler(async (req, res, next) => {    
+  const filename = `image-${Date.now()}.jpeg`;
+  await sharp(req.file.buffer)
+    .resize(400, 400)
+    .toFormat("jpeg")
+    .jpeg({ quality: 80 })
+    .toFile(`uploads/categories/${filename}`);
+ 
+    req.body.image = filename;
+  
+  next();
+});
+
 
 // @desc create a category
 // @route POST api/v1/categories

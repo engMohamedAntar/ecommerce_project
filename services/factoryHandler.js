@@ -19,7 +19,7 @@ exports.updateOne = (Model) =>
     });
     if (!document)
       return next(new ApiError(`No document found for ${req.params.id}`, 404));
-
+    document.save();
     res.status(200).json({ status: "success", data: document });
   });
 
@@ -33,8 +33,6 @@ exports.createOne = (Model) =>
 exports.getOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
-    console.log("reached");
-
     if (!document)
       return next(new ApiError(`No document found for ${req.params.id}`, 404));
     res.status(200).json({ data: document });

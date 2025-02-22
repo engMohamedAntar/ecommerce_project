@@ -60,13 +60,13 @@ class ApiFeatures {
 
   paginate(countdocs) {
     const page = parseInt(this.queryObj.page) || 1;
-    const limit = parseInt(this.queryObj.limit) || 30;
+    const limit = parseInt(this.queryObj.limit) || 50;
     const skip = (page - 1) * limit;
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
 
     //pagination info
     const paginationInfo = {};
-    //numOfPages
+    //numOfPages 
     paginationInfo.numOfPages = Math.ceil(countdocs / limit);
     //page
     paginationInfo.page = page;

@@ -21,7 +21,9 @@ const app = express();
 
 //middlewares
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'uploads')));
+
+app.use(express.static(path.join(__dirname, 'uploads'))); //?
+
 if (process.env.ENVIRONMENT === "developement") {
   app.use(morgan("tiny"));
 }
@@ -54,3 +56,11 @@ process.on("uncaughtException", (err) => {
   });
   
 });
+
+/*
+app.use(express.static(path.join(__dirname, 'uploads')));
+This tells Express to serve static files (like images) from the uploads folder.
+Now, if an image is saved in uploads/brands/image-123.jpeg,
+you can access it directly via:http://localhost:3000/brands/image-123.jpeg
+without needing a special route.
+*/

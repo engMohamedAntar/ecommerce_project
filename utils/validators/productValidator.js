@@ -39,6 +39,7 @@ exports.createProductValidator = [
     .isNumeric()
     .withMessage("price must be a number"),
   check("priceAfterDiscount")
+    .optional()
     .isFloat()
     .isNumeric()
     .withMessage("quantity must be a number")
@@ -52,11 +53,10 @@ exports.createProductValidator = [
     .isArray()
     .withMessage("color filed should be an array"),
   check("quantity")
-    .notEmpty()
-    .withMessage("quantity is required")
+    .optional()
     .isNumeric()
     .withMessage("quantity must be a number"),
-  check("sold").isNumeric().withMessage("sold must be a number"),
+  check("sold").optional().isNumeric().withMessage("sold must be a number"),
   check("imageCover").notEmpty().withMessage("imageCover is required"),
   check("images")
     .optional()
