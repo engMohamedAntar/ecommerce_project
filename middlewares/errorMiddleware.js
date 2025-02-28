@@ -4,7 +4,7 @@ const errorMiddleware = (err, req, res, next) => {
   err.status = err.status || "error";
   if(process.env.NODE_ENV === 'developement')
     sendErrorForDev(res, err);
-  else
+  else 
     sendErrorForProd(res, err);
 };
 

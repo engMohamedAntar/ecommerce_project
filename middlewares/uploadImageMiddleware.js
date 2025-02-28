@@ -14,6 +14,7 @@ const multerOptions = () => {
   return upload;
 };
 
+//returns a middleware upload.single(fieldName);
 exports.uploadImage = (fieldName) => {
   return multerOptions().single(fieldName);
 };

@@ -9,15 +9,17 @@ const { uploadMixOfImages } = require("../middlewares/uploadImageMiddleware");
 exports.uploadMixOfImages = uploadMixOfImages;
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   let filename = `image-${uuidv4()}-${Date.now()}-cover.jpeg`;
-  if (req.files.imageCover) {
+
+  if (req.files&& req.files.imageCover) {
     await sharp(req.files.imageCover[0].buffer)
       .resize(400, 400)
       .jpeg({ quality: 90 })
       .toFile(`uploads/products/${filename}`);
-  }
-  req.body.imageCover = filename;
 
-  if (req.files.images) {
+      req.body.imageCover = filename;
+  }
+
+  if (req.files && req.files.images) {
     req.body.images = [];
     await Promise.all(
       req.files.images.map(async (img, idx) => {

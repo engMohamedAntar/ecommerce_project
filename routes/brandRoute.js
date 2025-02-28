@@ -15,11 +15,11 @@ const {
   deleteBrandValidator,
 } = require("../utils/validators/brandValidator");
 const {uploadImage, resizeImage}= require('../services/brandService');
+const {protect, allowedTo}= require('../services/authService');
 
-
-router.post("/", uploadImage, resizeImage, createBrandValidator, createBrand);
+router.post("/",protect, allowedTo('admin'), uploadImage, resizeImage, createBrandValidator, createBrand);
 router.get("/:id", getBrandValidator, getBrand);
-router.get("/", getBrands);
-router.put("/:id", uploadImage, resizeImage, updateBrand);
-router.delete("/:id", deleteBrandValidator, deleteBrand);
+router.get("/", getBrands); 
+router.put("/:id",protect, allowedTo('admin'), uploadImage, resizeImage, updateBrand);
+router.delete("/:id",protect, allowedTo('admin'), deleteBrandValidator, deleteBrand);
 module.exports = router;

@@ -11,14 +11,16 @@ const { uploadImage } = require("../middlewares/uploadImageMiddleware");
 exports.uploadImage= uploadImage('image');
 
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const filename = `image-${Date.now()}.jpeg`;
-  await sharp(req.file.buffer)
+  if(req.file) {
+    const filename = `image-${Date.now()}.jpeg`;
+    await sharp(req.file.buffer)
     .resize(400, 400)
     .toFormat("jpeg")
     .jpeg({ quality: 80 })
     .toFile(`uploads/brands/${filename}`);
 
     req.body.image = filename;
+  }
   next();
 });
 
