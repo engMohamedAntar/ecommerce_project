@@ -32,6 +32,9 @@ const userSchema= new mongoose.Schema({
     default: 'user'
   },
   passwordChangedAt: Date,
+  passwordResetCode: String,
+  passwordResetExpires: Date,
+  passwordResetVerified: Boolean,
 },
 {
   timestamps: true,
@@ -48,6 +51,7 @@ userSchema.post('init', function(doc) {
 
 //hash password before saving it to database
 userSchema.pre('save', async function(next) {
+  if(!this.isModified('password')) return next();
   this.password= await bcrypt.hash(this.password, 12);
   next();
 });

@@ -98,3 +98,31 @@ exports.changePasswordValidator = [
     }),
   validatorMiddleware,
 ];
+
+
+exports.changeMyPasswordValidator = [
+  body("currentPassword").notEmpty().withMessage("currentPassword is required"),
+  body("confirmPassword").notEmpty().withMessage("confirmPassword is required"),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("newPassword is required")
+    .custom(async (val, { req }) => {
+      //ensure current password is correct
+      const user = await User.findById(req.user._id);
+      if (!user) return Promise.reject(new Error("No user found for this id"));
+      const isCorrectCurPass = await bcrypt.compare(
+        req.body.currentPassword,
+        user.password
+      );
+      if (!isCorrectCurPass)
+        return Promise.reject(new Error("Wrong current password"));
+
+      //ensure newPassword equal confirmPassword
+      if (val !== req.body.confirmPassword)
+        return Promise.reject(
+          new Error("newPassword not equal confirmPassword")
+        );
+      return true;
+    }),
+  validatorMiddleware,
+];
