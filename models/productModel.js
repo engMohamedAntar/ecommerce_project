@@ -98,6 +98,7 @@ const setImageUrl= (doc)=>{
 ProductSchema.post('save', function(doc) {
   setImageUrl(doc);
 });
+
 // work for the findOne, find, update
 ProductSchema.post('init', function(doc) {
   setImageUrl(doc);

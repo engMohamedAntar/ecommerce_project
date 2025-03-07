@@ -62,7 +62,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   if(!user.isActive)
     return next(new ApiError("This user is deactivated, activate it first.", 401));
 
-  req.user = user;  
+  req.user = user;    
   next();
 });
 

@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-const ApiError = require("../utils/apiError");
-const ApiFeatures= require('../utils/apiFeatures');
+const ApiError = require("../utils/apiError"); 
+const ApiFeatures= require('../utils/apiFeatures'); 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findByIdAndDelete(req.params.id);
@@ -13,7 +13,8 @@ exports.deleteOne = (Model) =>
 
 exports.updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {
-    if (req.body.name) req.body.slug = slugify(req.body.name);
+    if(req.body.name)
+      req.body.slug= slugify(req.body.name);
     const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
@@ -23,9 +24,13 @@ exports.updateOne = (Model) =>
     res.status(200).json({ status: "success", data: document });
   });
 
-exports.createOne = (Model) =>
-  asyncHandler(async (req, res, next) => {
-    req.body.slug = slugify(req.body.name);
+exports.createOne = (Model, modelName="") =>
+  asyncHandler(async (req, res, next) => {    
+    if(modelName === "Review")
+      req.body.slug= slugify(req.body.review)
+    else
+      req.body.slug = slugify(req.body.name);
+
     const document = await Model.create(req.body);
     res.status(201).json({ status: "success", data: document });
   });
