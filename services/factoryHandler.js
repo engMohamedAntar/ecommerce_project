@@ -35,9 +35,11 @@ exports.createOne = (Model, modelName="") =>
     res.status(201).json({ status: "success", data: document });
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, populateOption="") =>
   asyncHandler(async (req, res, next) => {
-    const document = await Model.findById(req.params.id);
+    const query= Model.findById(req.params.id);
+    query.populate(populateOption); //?
+    const document = await query;
     if (!document)
       return next(new ApiError(`No document found for ${req.params.id}`, 404));
     res.status(200).json({ data: document });
@@ -62,3 +64,9 @@ exports.getAll = (Model, modelName= '') =>
       .status(200)
       .json({ results: documents.length, paginationInfo, data: documents });
   });
+
+
+
+//notices
+// query.populate(populateOption); => we populate the virtual field "reviews" that exist 
+// in the productSchema only in the getOne function.

@@ -49,7 +49,7 @@ exports.getProducts = factoryHandler.getAll(Product, "Product");
 // @desc get a single product
 // @route GET api/v1/products
 // @access public
-exports.getProduct = factoryHandler.getOne(Product);
+exports.getProduct = factoryHandler.getOne(Product, "reviews");
 
 // @desc update a product
 // @route PUT api/v1/products

@@ -28,11 +28,11 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
 //works in the create
 reviewSchema.post('save', async function(doc) {
   await doc.populate({ path: "user", select: "name" });
 });
-
 // work for the findOne, find, update
 reviewSchema.pre(/^find/, function (next) {
   this.populate({ path: "user", select: "name" });

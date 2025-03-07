@@ -1,7 +1,7 @@
 //productModel.js
 const mongoose = require("mongoose");
 
-const ProductSchema = new mongoose.Schema(
+const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -66,9 +66,22 @@ const ProductSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
-ProductSchema.pre(/^find/, function (next) {
+
+//virtual population for 'reviews' field.
+productSchema.virtual('reviews', {
+  ref: 'Review',
+  localField: '_id',
+  foreignField: 'product',
+});
+
+
+
+
+productSchema.pre(/^find/, function (next) {
   this.populate({
     path: "category",
     select: "name -_id",
@@ -95,13 +108,13 @@ const setImageUrl= (doc)=>{
 }
 
 // work for the create
-ProductSchema.post('save', function(doc) {
+productSchema.post('save', function(doc) {
   setImageUrl(doc);
 });
 
 // work for the findOne, find, update
-ProductSchema.post('init', function(doc) {
+productSchema.post('init', function(doc) {
   setImageUrl(doc);
 });
 
-module.exports = mongoose.model("Product", ProductSchema);
+module.exports = mongoose.model("Product", productSchema);
