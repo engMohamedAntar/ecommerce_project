@@ -14,17 +14,17 @@ exports.createReviewValidator = [
   check('user')
   .notEmpty().withMessage('user is required')
   .isMongoId().withMessage('user not a valid mongoId')
-  .custom(async(val, {req})=>{
-   if(req.user._id.toString() !== val)
-    return Promise.reject(new ApiError('Can not create a review with another user id', 400));
-   return true;
+  .custom((val, {req})=>{  // ensure user create review for himself
+    if(req.user._id.toString() !== val.toString())
+      return Promise.reject(new ApiError('You can only create review for your self',400));
+    return true;
   }),
 
   check('product')
   .notEmpty().withMessage('product is required')
   .isMongoId().withMessage('product not a valid mongoId')
-  .custom(async(val, {req})=>{ //validate that logged user didn't review this product before
-    const review= await Review.findOne({product: val, user: req.user.id});
+  .custom(async(val, {req})=>{ //validate that logged user didn't review this product before    
+    const review= await Review.findOne({product: val, user: req.body.user});
     if(review)
       return Promise.reject(new ApiError('This user reviewed this product before', 400));
     return true;

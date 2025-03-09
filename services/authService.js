@@ -33,7 +33,7 @@ exports.logIn = async (req, res, next) => {
 };
 
 // @desc create the protect middlewaare
-exports.protect = asyncHandler(async (req, res, next) => {
+exports.protect = asyncHandler(async (req, res, next) => {  
   // check weather token exist (user is loggedIn)
   if (
     !req.headers.authorization ||
@@ -63,6 +63,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new ApiError("This user is deactivated, activate it first.", 401));
 
   req.user = user;    
+  
   next();
 });
 

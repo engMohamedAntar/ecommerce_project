@@ -12,17 +12,19 @@ exports.addCategoryIdToBody = (req, res, next) => {
   next();
 };
 
-// @desc create subcategory
-// @route POST api/v1/subcategories/
-// @access Private-admin
-exports.createSubCategory = factoryHandler.createOne(SubCategory);
-
+//used in the getSubCategories route
 exports.addFilterObjToReq = (req, res, next) => {
   let filterObject = {};
   if (req.params.categoryid) filterObject = { category: req.params.categoryid };
   req.filterObj = filterObject;
   next();
 };
+
+// @desc create subcategory
+// @route POST api/v1/subcategories/
+// @access Private-admin
+exports.createSubCategory = factoryHandler.createOne(SubCategory);
+
 
 // @desc get all subcategories
 // @route GET api/v1/subcategories/

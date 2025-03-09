@@ -25,9 +25,9 @@ exports.updateOne = (Model) =>
   });
 
 exports.createOne = (Model, modelName="") =>
-  asyncHandler(async (req, res, next) => {    
-    if(modelName === "Review")
-      req.body.slug= slugify(req.body.review)
+  asyncHandler(async (req, res, next) => {
+    if(modelName=== 'Review')
+      req.body.slug = slugify(req.body.review);
     else
       req.body.slug = slugify(req.body.name);
 
