@@ -1,6 +1,8 @@
 const sharp = require("sharp");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
+const mongoose= require('mongoose'
+)
 const User = require("../models/userModel");
 const ApiError = require("../utils/apiError");
 const factoryHandler = require("./factoryHandler");

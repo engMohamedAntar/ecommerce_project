@@ -14,6 +14,9 @@ const productRoute = require("./routes/productRoute");
 const userRoute = require("./routes/userRoute");
 const authRoute = require("./routes/authRoute");
 const reviewRoute = require("./routes/reviewRoute");
+const wishListRoute = require("./routes/wishlistRoute");
+const addressRoute = require("./routes/addressRoute");
+const couponRoute = require("./routes/couponRoute");
 const ApiError = require("./utils/apiError");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
@@ -39,6 +42,9 @@ app.use("/api/v1/products", productRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/reviews", reviewRoute);
+app.use("/api/v1/wishlist", wishListRoute);
+app.use("/api/v1/addresses", addressRoute);
+app.use("/api/v1/coupons", couponRoute);
 
 app.all("*", (req, res, next) => {
   return next(new ApiError("This route not found", 404));

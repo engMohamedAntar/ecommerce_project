@@ -12,7 +12,7 @@ const {
   getLoggedUser,
   changeMyPassword,
   updateLoggedUserData,
-  deactivateMe
+  deactivateMe,
 } = require("../services/userService");
 const {
   createUserValidator,
@@ -39,5 +39,4 @@ router.get("/:id", getUserValidator, getUser);
 router.put("/:id", uploadImage, resizeImage, updateUserValidator, updateUser);
 router.delete("/:id", deleteUserValidator, deleteUser);
 router.put("/changepassword/:id", changePasswordValidator, changePassword);
-
 module.exports = router;

@@ -31,6 +31,19 @@ const userSchema= new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
+  wishList: [{
+    type: mongoose.Schema.ObjectId,
+    ref: 'Product'
+  }],
+  addresses: [
+    {
+      alias: String,
+      details: String,
+      city: String,
+      postalCode: String,
+      phone: String,
+    }
+  ],
   passwordChangedAt: Date,
   passwordResetCode: String,
   passwordResetExpires: Date,
