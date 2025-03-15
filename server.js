@@ -7,16 +7,7 @@ const mongoose = require("mongoose");
 dotenv.config();
 
 const dbConnection = require("./config/dbConnection");
-const categoryRoute = require("./routes/categoryRoute");
-const subCategoryRoute = require("./routes/subCategoryRoute");
-const brandRoute = require("./routes/brandRoute");
-const productRoute = require("./routes/productRoute");
-const userRoute = require("./routes/userRoute");
-const authRoute = require("./routes/authRoute");
-const reviewRoute = require("./routes/reviewRoute");
-const wishListRoute = require("./routes/wishlistRoute");
-const addressRoute = require("./routes/addressRoute");
-const couponRoute = require("./routes/couponRoute");
+const mounteRoutes= require('./routes');
 const ApiError = require("./utils/apiError");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
@@ -35,16 +26,7 @@ if (process.env.ENVIRONMENT === "developement") {
 }
 
 //Mount Routes
-app.use("/api/v1/categories", categoryRoute);
-app.use("/api/v1/subcategories", subCategoryRoute);
-app.use("/api/v1/brands", brandRoute);
-app.use("/api/v1/products", productRoute);
-app.use("/api/v1/users", userRoute);
-app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/reviews", reviewRoute);
-app.use("/api/v1/wishlist", wishListRoute);
-app.use("/api/v1/addresses", addressRoute);
-app.use("/api/v1/coupons", couponRoute);
+mounteRoutes(app);
 
 app.all("*", (req, res, next) => {
   return next(new ApiError("This route not found", 404));
@@ -53,10 +35,10 @@ app.all("*", (req, res, next) => {
 //Global globalError handler
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000; 
 const server = app.listen(PORT, () => {
   console.log(`app connected to port ${PORT}`);
-});
+}); 
 
 //Handle errors outside express
 process.on("uncaughtException", (err) => {
