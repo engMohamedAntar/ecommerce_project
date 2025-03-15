@@ -2,9 +2,11 @@ const asyncHandler = require("express-async-handler");
 const Cart = require("../models/cartModel");
 const ApiError = require("../utils/apiError");
 const Product = require("../models/productModel");
+const Coupon= require('../models/couponModel');
 
 const calcTotalCartPrice= (cart)=>{
   cart.totalPrice= cart.cartItems.reduce((acc, item)=> acc+= item.quantity* item.price, 0);
+  cart.totalPriceAfterDiscount= undefined;
 }
 
 // @desc add product to logged user cart
@@ -86,4 +88,24 @@ exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   calcTotalCartPrice(cart);
   await cart.save();
   res.status(200).json({ status: "success", numOfCartItems:cart.cartItems.length, data: cart });
+});
+
+// @desc update cartItem quanity
+// @route put api/v1/cart/applycoupon
+// @access protect-user
+exports.applyCouponOnCart= asyncHandler(async (req,res,next)=>{
+  //find logged user cart
+  const cart= await Cart.findOne({user: req.user._id});
+  if(!cart)
+    return next(new ApiError('No cart found for this user', 404));
+
+  //validate that coupon is valid
+  const coupon= await Coupon.findOne({name: req.body.coupon});
+  if(!coupon || coupon.expiryDate< Date.now())
+    return next(new ApiError('Coupon is invalid or expired', 400));
+  
+  //update the cart totalPriceAfterDiscount
+  cart.totalPriceAfterDiscount= cart.totalPrice - (cart.totalPrice * coupon.discount/100);
+  await cart.save();
+  res.status(200).json({status: 'success', message: "coupon applied", data: cart});
 });

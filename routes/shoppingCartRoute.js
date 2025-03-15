@@ -1,5 +1,5 @@
 const express= require('express');
-const {addProductToShoppingCart, getLoggedUserCart, clearLoggedUserCart, removeProductFromCart, updateCartItemQuantity}= require('../services/cartService');
+const {addProductToShoppingCart, getLoggedUserCart, clearLoggedUserCart, removeProductFromCart, updateCartItemQuantity, applyCouponOnCart}= require('../services/cartService');
 const {protect, allowedTo}= require('../services/authService');
 
 const router= express.Router();
@@ -10,5 +10,6 @@ router.get('/', getLoggedUserCart);
 router.delete('/:productid', removeProductFromCart);
 router.delete('/', clearLoggedUserCart);
 router.put('/:itemid', updateCartItemQuantity);
+router.post('/applycoupon', applyCouponOnCart);
 
 module.exports= router;
