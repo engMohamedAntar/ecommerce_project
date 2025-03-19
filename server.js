@@ -35,7 +35,7 @@ if (process.env.ENVIRONMENT === "developement") {
 
 //Mount Routes
 mounteRoutes(app);
-app.use('/checkoutWebhook',express.json({type: 'application/json'}), checkoutWebhook );
+app.use('/checkoutWebhook',express.raw({type: 'application/json'}), checkoutWebhook );
 app.get("/", (req, res) => {
   res.send("E-commerce API is running...");
 });
