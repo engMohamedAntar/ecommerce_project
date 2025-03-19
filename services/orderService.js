@@ -101,59 +101,66 @@ exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", data: order });
 });
 
-// @desc create checkout_session
-// @route PUT api/v1/orders/:cartid/checkout_session
-// @access private-admin
+// @desc create a checkout session
+// @route POST api/v1/orders/:cartid/checkout_session
+// @access Protect/user
 exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
-  //get the cart
-  const cart = await Cart.findById(req.params.cartid);
-  if (!cart) {
-    return next(new ApiError("No cart found for this ID", 404));
-  }
-  //get totalOrderPrice
-  const totalOrderPrice = cart.totalPriceAfterDiscount
+  //calc totalCartPrice
+  const taxPrice = 0;
+  const shippingPrice = 0;
+  const cart = await CartModel.findById(req.params.cartId);
+  if (!cart) return next(new ApiError("Cart not found", 404));
+  const totalCartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
-    : cart.totalPrice;
-  const user = await User.findById(cart.user);
-  if (!user) return next(new ApiError("no user found for this id", 404));
+    : cart.totalCartPrice;
+  const totalOrderPrice = totalCartPrice + taxPrice + shippingPrice;
 
+  //create a session
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
         price_data: {
           currency: "egp",
           product_data: {
-            name: "Cart Order",
+            name: `Cart Order`,
           },
-          unit_amount: Math.round(totalOrderPrice * 100),
+          unit_amount: totalOrderPrice * 100,
         },
         quantity: 1,
       },
     ],
-    payment_method_types: ["card"],
+
     mode: "payment",
-    success_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
-    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
-    client_reference_id: req.params.cartid,
-    customer_email: user.email,
+    success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
+    cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
+    client_reference_id: req.params.cartId,
+    customer_email: req.user.email,
     metadata: req.body.shippingAddress,
   });
-  res.status(201).json({ status: "success", session });
+
+  res.status(200).json({ status: "success", session });
 });
 
-exports.checkoutWebhook =   asyncHandler((req, res, next) => {
-  const sig = req.headers['stripe-signature'];
+// @desc This webhook will run when stripe payment is success
+// @route POST /checkout-webhook --> this route exist in server.js file
+// @access Protected/User
+exports.checkoutWebhook = (req, res, next) => {
+  const sig = req.headers["stripe-signature"];
+
   let event;
+
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  }
-  catch (err) {
+    event = stripe.webhooks.constructEvent( req.body, sig, process.env.STRIPE_WEBHOOK_SECRET );
+  } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
+  
+  if (event.type === "checkout.session.completed") {
+    createCardOrder(event.data.object);
+  }
+  res.status(200).json({ received: true, antoor: "zeroo" });
+};
 
-  if(event.type==="checkout.session.completed")
-    console.log('create order here');
-    
-  // Return a res to acknowledge receipt of the event
-  res.json({ received: true });
-});
+
+
+
