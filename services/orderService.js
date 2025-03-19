@@ -108,7 +108,7 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   //calc totalCartPrice
   const taxPrice = 0;
   const shippingPrice = 0;
-  const cart = await Cart.findById(req.params.cartId);
+  const cart = await Cart.findById(req.params.cartid);
   if (!cart) return next(new ApiError("Cart not found", 404));
   const totalCartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
@@ -133,7 +133,7 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
     mode: "payment",
     success_url: `${req.protocol}://${req.get("host")}/api/v1/orders`,
     cancel_url: `${req.protocol}://${req.get("host")}/api/v1/cart`,
-    client_reference_id: req.params.cartId,
+    client_reference_id: req.params.cartid,
     customer_email: req.user.email,
     metadata: req.body.shippingAddress,
   });
