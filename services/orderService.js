@@ -145,10 +145,13 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
 // @route POST /checkout-webhook --> this route exist in server.js file
 // @access Protected/User
 exports.checkoutWebhook = (req, res, next) => {
+  console.log('entered 1');
+  
   const sig = req.headers["stripe-signature"];
 
   let event;
-
+  console.log('entered 2');
+  
   try {
     event = stripe.webhooks.constructEvent( req.body, sig, process.env.STRIPE_WEBHOOK_SECRET );
   } catch (err) {
@@ -156,7 +159,10 @@ exports.checkoutWebhook = (req, res, next) => {
   }
   
   if (event.type === "checkout.session.completed") {
-    createCardOrder(event.data.object);
+    console.log('create order here');
+  } else {
+    console.log('check failed haha');
+    
   }
   res.status(200).json({ received: true, antoor: "zeroo" });
 };
