@@ -141,24 +141,19 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(201).json({ status: "success", session });
 });
 
-exports.checkoutWebhook = asyncHandler(async (req, res, next) => {  
-  const sig = req.headers["stripe-signature"];
-
+exports.checkoutWebhook =   asyncHandler((req, res, next) => {
+  const sig = req.headers['stripe-signature'];
   let event;
-
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
+  }
+  catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === "checkout.session.completed") {
-    console.log("create order here");
-  } else {
-    console.log('wrong check');
+  if(event.type==="checkout.session.completed")
+    console.log('create order here');
     
-  }
-
   // Return a res to acknowledge receipt of the event
   res.json({ received: true });
 });
