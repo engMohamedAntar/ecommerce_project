@@ -108,11 +108,11 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   //calc totalCartPrice
   const taxPrice = 0;
   const shippingPrice = 0;
-  const cart = await CartModel.findById(req.params.cartId);
+  const cart = await Cart.findById(req.params.cartId);
   if (!cart) return next(new ApiError("Cart not found", 404));
   const totalCartPrice = cart.totalPriceAfterDiscount
     ? cart.totalPriceAfterDiscount
-    : cart.totalCartPrice;
+    : cart.totalPrice;
   const totalOrderPrice = totalCartPrice + taxPrice + shippingPrice;
 
   //create a session
