@@ -49,7 +49,7 @@ exports.createCashOrder = asyncHandler(async (req, res, next) => {
     await Cart.findByIdAndDelete(req.params.cartid);
   }
 
-  // 6) return the response
+  // 6) return the res
   res.status(201).json({ status: "success", data: order });
 });
 
@@ -142,12 +142,12 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
 });
 
 exports.checkoutWebhook = asyncHandler(async (req, res, next) => {  
-  const sig = request.headers["stripe-signature"];
+  const sig = req.headers["stripe-signature"];
 
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig, process.env.STRIPE_SECRET);
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -159,6 +159,6 @@ exports.checkoutWebhook = asyncHandler(async (req, res, next) => {
     
   }
 
-  // Return a response to acknowledge receipt of the event
-  response.json({ received: true });
+  // Return a res to acknowledge receipt of the event
+  res.json({ received: true });
 });

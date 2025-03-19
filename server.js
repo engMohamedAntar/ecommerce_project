@@ -36,6 +36,9 @@ if (process.env.ENVIRONMENT === "developement") {
 //Mount Routes
 mounteRoutes(app);
 app.use('/checkoutWebhook',express.json({type: 'application/json'}), checkoutWebhook );
+app.get("/", (req, res) => {
+  res.send("E-commerce API is running...");
+});
 
 app.all("*", (req, res, next) => {
   return next(new ApiError("This route not found", 404));
