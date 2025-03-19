@@ -1,7 +1,5 @@
 //orderService.js
-const stripe = require("stripe")(
-  "sk_test_51Qj2UgKiTGea6E93jhLzMjg2LbSIPV5ZkrClz1jucGl1gJFHNVkp4SUSG3ruJvJp1fG1QpvrhlxmU7IZaM73ZS4j00KVO3uMIp"
-);
+const stripe = require("stripe")(process.env.STRIPE_SECRET);
 const asyncHandler = require("express-async-handler");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
