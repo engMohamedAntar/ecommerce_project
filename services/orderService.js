@@ -141,9 +141,7 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(201).json({ status: "success", session });
 });
 
-exports.checkoutWebhook = asyncHandler(async (req, res, next) => {
-  console.log('reached the checkouteWebhook haha');
-  
+exports.checkoutWebhook = asyncHandler(async (req, res, next) => {  
   const sig = request.headers["stripe-signature"];
 
   let event;
@@ -156,6 +154,9 @@ exports.checkoutWebhook = asyncHandler(async (req, res, next) => {
 
   if (event.type === "checkout.session.completed") {
     console.log("create order here");
+  } else {
+    console.log('wrong check');
+    
   }
 
   // Return a response to acknowledge receipt of the event
