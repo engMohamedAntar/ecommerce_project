@@ -4,12 +4,17 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-dotenv.config();
+const cors = require('cors');
+const compression = require('compression')
 
+dotenv.config();
 const dbConnection = require("./config/dbConnection");
 const mounteRoutes= require('./routes');
 const ApiError = require("./utils/apiError");
 const errorMiddleware = require("./middlewares/errorMiddleware");
+
+//routes
+const {checkoutWebhook}= require('./services/orderService');
 
 //connect to DB
 dbConnection();
@@ -18,6 +23,9 @@ const app = express();
 
 //middlewares
 app.use(express.json());
+app.use(cors());
+app.options('*', cors());
+app.use(compression());
 
 app.use(express.static(path.join(__dirname, 'uploads'))); //?
 
@@ -27,6 +35,7 @@ if (process.env.ENVIRONMENT === "developement") {
 
 //Mount Routes
 mounteRoutes(app);
+app.use('/checkoutWebhook',express.json({type: 'application/json'}), checkoutWebhook );
 
 app.all("*", (req, res, next) => {
   return next(new ApiError("This route not found", 404));

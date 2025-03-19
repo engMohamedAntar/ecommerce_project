@@ -60,7 +60,7 @@ exports.removeProductFromCart = asyncHandler(async (req, res, next) => {
   }, {new: true});
 
   calcTotalCartPrice(cart);
-  cart.save();
+  await cart.save();
 
   res.status(200).json({ status: "success", numOfCartItems:cart.cartItems.length, data: cart });
 });
