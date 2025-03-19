@@ -26,6 +26,8 @@ app.use(express.json());
 app.use(cors());
 app.options('*', cors());
 app.use(compression());
+app.use('/checkoutWebhook', express.raw({type: 'application/json'}), checkoutWebhook );
+
 
 app.use(express.static(path.join(__dirname, 'uploads'))); //?
 
@@ -35,7 +37,6 @@ if (process.env.ENVIRONMENT === "developement") {
 
 //Mount Routes
 mounteRoutes(app);
-app.use('/checkoutWebhook', express.raw({type: 'application/json'}), checkoutWebhook );
 app.get("/", (req, res) => {
   res.send("E-commerce API is running...");
 });
