@@ -142,15 +142,14 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
-exports.createCardOrder= (session)=>{
+const createCardOrder= (session)=>{
   console.log(session);
-  
 } 
 
 // @desc This webhook will run when stripe payment is success
 // @route POST /webhook --> this route exist in server.js file
 // @access Protected/User
-exports.checkoutWebhook = (req, res, next) => {
+exports.checkoutWebhook = asyncHandler((req, res, next) => {
   const sig = req.headers["stripe-signature"];
   let event;
 
@@ -164,4 +163,4 @@ exports.checkoutWebhook = (req, res, next) => {
     createCardOrder(event.data.object);
   }
   res.status(200).json({ received: true, antoor: "zeroo" });
-};
+});
