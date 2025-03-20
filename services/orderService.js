@@ -142,6 +142,8 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
 });
 
 const createCardOrder = asyncHandler(async (session) => {
+  console.log('Entered the createCardOrder function');
+  
   const taxPrice = 0;
   const shippingPrice = 0;
   console.log(session);
@@ -173,6 +175,8 @@ const createCardOrder = asyncHandler(async (session) => {
     await Product.bulkWrite(bulkOption);
   }
   await Cart.findByIdAndDelete(session.client_reference_id);
+  console.log('deleted the cart');
+  
 });
 
 // @desc This webhook will run when stripe payment is success
