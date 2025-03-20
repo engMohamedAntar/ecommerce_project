@@ -22,11 +22,11 @@ dbConnection();
 const app = express();
 
 //middlewares
+app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook); //?
 app.use(express.json());
 app.use(cors());
 app.options('*', cors());
 app.use(compression());
-app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook); //?
 
 
 
