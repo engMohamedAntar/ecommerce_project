@@ -152,6 +152,7 @@ const createCardOrder = asyncHandler(async (session) => {
   const shippingAddress = session.metadata;
 
   const order = await Order.create({
+    user: cart.user,
     cartItems: cart.cartItems,
     totalOrderPrice,
     paymentMethod: "credit_card",
