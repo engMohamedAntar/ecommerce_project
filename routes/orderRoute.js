@@ -12,6 +12,5 @@ router.put('/:id/deliver', protect, allowedTo('admin'), updateOrderToDelivered);
 
 router.use(protect, allowedTo('user'));
 
-router.post('/:cartid', createCashOrder);
-router.post('/:cartid/checkout_session', createCheckoutSession);
+router.post('/checkoutSession/:cartid', createCheckoutSession);
 module.exports= router;

@@ -14,7 +14,7 @@ const ApiError = require("./utils/apiError");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
 //routes
-const {checkoutWebhook}= require('./services/orderService');
+const {checkoutWebhook}= require('./services/orderService')
 
 //connect to DB
 dbConnection();
@@ -26,7 +26,8 @@ app.use(express.json());
 app.use(cors());
 app.options('*', cors());
 app.use(compression());
-app.use('/checkoutWebhook', express.raw({type: 'application/json'}), checkoutWebhook );
+app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook); //?
+
 
 
 app.use(express.static(path.join(__dirname, 'uploads'))); //?
@@ -37,9 +38,6 @@ if (process.env.ENVIRONMENT === "developement") {
 
 //Mount Routes
 mounteRoutes(app);
-app.get("/", (req, res) => {
-  res.send("E-commerce API is running...");
-});
 
 app.all("*", (req, res, next) => {
   return next(new ApiError("This route not found", 404));

@@ -101,8 +101,9 @@ exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", data: order });
 });
 
+
 // @desc create a checkout session
-// @route POST api/v1/orders/:cartid/checkout_session
+// @route POST api/v1/orders/checkoutSession/:cartid
 // @access Protect/user
 exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   //calc totalCartPrice
@@ -122,7 +123,7 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
         price_data: {
           currency: "egp",
           product_data: {
-            name: `Cart Order`,
+            name: `Order by ${req.user.name}`,
           },
           unit_amount: totalOrderPrice * 100,
         },
@@ -141,17 +142,16 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
+
+
 // @desc This webhook will run when stripe payment is success
-// @route POST /checkout-webhook --> this route exist in server.js file
+// @route POST /checkoutWebhook --> this route exist in server.js file
 // @access Protected/User
 exports.checkoutWebhook = (req, res, next) => {
-  console.log('entered 1');
-  
   const sig = req.headers["stripe-signature"];
 
   let event;
-  console.log('entered 2');
-  
+
   try {
     event = stripe.webhooks.constructEvent( req.body, sig, process.env.STRIPE_WEBHOOK_SECRET );
   } catch (err) {
@@ -160,13 +160,7 @@ exports.checkoutWebhook = (req, res, next) => {
   
   if (event.type === "checkout.session.completed") {
     console.log('create order here');
-  } else {
-    console.log('check failed haha');
     
   }
   res.status(200).json({ received: true, antoor: "zeroo" });
 };
-
-
-
-
