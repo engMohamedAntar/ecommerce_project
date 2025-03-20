@@ -101,7 +101,6 @@ exports.updateOrderToDelivered = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", data: order });
 });
 
-
 // @desc create a checkout session
 // @route POST api/v1/orders/checkoutSession/:cartid
 // @access Protect/user
@@ -142,9 +141,39 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
   res.status(200).json({ status: "success", session });
 });
 
-const createCardOrder= (session)=>{
+const createCardOrder = asyncHandler(async (session) => {
+  const taxPrice = 0;
+  const shippingPrice = 0;
   console.log(session);
-} 
+  const totalOrderPrice = session.amount_total / 100;
+  const cart = await Cart.findById(session.client_reference_id);
+  const shippingAddress = session.metadata;
+
+  const order = await Order.create({
+    cartItems: cart.cartItems,
+    totalOrderPrice,
+    paymentMethod: "credit_card",
+    isPaid: true,
+    paidAt: Date.now(),
+    shippingAddress,
+    taxPrice,
+    shippingPrice,
+  });
+
+  if (order) {
+    //update products data
+    const bulkOption = cart.cartItems.map((item) => {
+      return {
+        updateOne: {
+          filter: { _id: item.product },
+          update: { $inc: { quantity: -item.quantity, sold: +item.quantity } },
+        },
+      };
+    });
+    await Product.bulkWrite(bulkOption);
+  }
+  await Cart.findByIdAndDelete(session.client_reference_id);
+});
 
 // @desc This webhook will run when stripe payment is success
 // @route POST /webhook --> this route exist in server.js file
@@ -154,11 +183,15 @@ exports.checkoutWebhook = asyncHandler((req, res, next) => {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent( req.body, sig, process.env.STRIPE_WEBHOOK_SECRET );
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
   } catch (err) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  
+
   if (event.type === "checkout.session.completed") {
     createCardOrder(event.data.object);
   }
