@@ -44,7 +44,14 @@ exports.logInValidator = [
 
   check("email")
     .isEmail().withMessage("email is not valid")
-    .notEmpty().withMessage("email can not be empty"),
+    .notEmpty().withMessage("email can not be empty").custom(async(val,{req})=>{
+      const user= await User.findOne({email: val});
+      if(!user)
+        return Promise.reject(new Error('no user found',404));
+      if(user.isActive===false)
+        return Promise.reject(new Error('user deactivated',404));
+      return true;
+    }),
   check("password")
     .isLength({ min: 6 })
     .withMessage("password should be at least 6 digits"),

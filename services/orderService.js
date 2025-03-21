@@ -124,7 +124,7 @@ exports.createCheckoutSession = asyncHandler(async (req, res, next) => {
           product_data: {
             name: `Order by ${req.user.name}`,
           },
-          unit_amount: totalOrderPrice * 100,
+          unit_amount: Math.round(parseFloat(totalOrderPrice.toFixed(2)) * 100),
         },
         quantity: 1,
       },
