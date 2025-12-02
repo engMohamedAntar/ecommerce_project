@@ -18,7 +18,9 @@ const reviewRoute= require('../routes/reviewRoute');
 router.use("/:productid/reviews", reviewRoute);
 
 router.post("/", protect, allowedTo('admin'),  uploadMixOfImages(), resizeImage, createProductValidator, createProduct);
+
 router.get("/:id", getProductValidator, getProduct);
+
 router.get("/", getProducts);
 router.put("/:id", protect, allowedTo('admin'),  uploadMixOfImages(), resizeImage, updateProductValidator, updateProduct);
 router.delete("/:id", protect, allowedTo('admin'), deleteProductValidator, deleteProduct);

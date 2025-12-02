@@ -1,3 +1,4 @@
+//ApiFeatures.js
 class ApiFeatures {
   constructor(mongooseQuery, queryObj) {
     this.mongooseQuery = mongooseQuery;

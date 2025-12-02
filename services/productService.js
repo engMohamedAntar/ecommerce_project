@@ -10,13 +10,13 @@ exports.uploadMixOfImages = uploadMixOfImages;
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   let filename = `image-${uuidv4()}-${Date.now()}-cover.jpeg`;
 
-  if (req.files&& req.files.imageCover) {
+  if (req.files && req.files.imageCover) {
     await sharp(req.files.imageCover[0].buffer)
       .resize(400, 400)
       .jpeg({ quality: 90 })
       .toFile(`uploads/products/${filename}`);
 
-      req.body.imageCover = filename;
+    req.body.imageCover = filename;
   }
 
   if (req.files && req.files.images) {
@@ -46,6 +46,7 @@ exports.createProduct = factoryHandler.createOne(Product);
 // @route GET api/v1/products
 // @access public
 exports.getProducts = factoryHandler.getAll(Product, "Product");
+
 // @desc get a single product
 // @route GET api/v1/products
 // @access public

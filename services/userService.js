@@ -45,10 +45,10 @@ exports.getUser = factoryHandler.getOne(User);
 // @route PUT api/v1/users/:id
 // @access private-admin
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const { name, email, phone, profileImage, role } = req.body;
+  const { name, email, phone, profileImage, role, wishList } = req.body;
   const user = await User.findByIdAndUpdate(
     req.params.id,
-    { name, email, phone, profileImage, role },
+    { name, email, phone, profileImage, role, wishList },
     { new: true }
   );
   if (!user) return next(new ApiError("No user found for this id", 404));
@@ -59,6 +59,9 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 // @route DELETE api/v1/users/:id
 // @access private-admin
 exports.deleteUser = factoryHandler.deleteOne(User);
+
+
+
 
 // @desc change user user password
 // @route PUT api/v1/users/changepassword/:id
