@@ -57,12 +57,12 @@ const userSchema= new mongoose.Schema({
 userSchema.post('save', function(doc) {
   doc.profileImage= `${process.env.BASE_URL}/users/${doc.profileImage}`;
 });
-//words with the find
+//works with the find
 userSchema.post('init', function(doc) {
   doc.profileImage= `${process.env.BASE_URL}/users/${doc.profileImage}`;
 });
 
-//hash password before saving it to database
+//hash password before saving it to database(works for the create function)
 userSchema.pre('save', async function(next) {
   if(!this.isModified('password')) return next();
   this.password= await bcrypt.hash(this.password, 12);

@@ -20,7 +20,6 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
     req.body.image = filename;
   }
-
   next();
 });
 

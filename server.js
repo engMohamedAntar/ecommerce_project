@@ -1,62 +1,26 @@
 //server.js
-const path= require('path');
-const express = require("express");
 const dotenv = require("dotenv");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
-const cors = require('cors');
-const compression = require('compression')
-
+const express = require("express");
 dotenv.config();
-const dbConnection = require("./config/dbConnection");
-const mounteRoutes= require('./routes');
-const ApiError = require("./utils/apiError");
-const errorMiddleware = require("./middlewares/errorMiddleware");
-
+const createApp = require("./createApp");
 //routes
-const {checkoutWebhook}= require('./services/orderService')
+const dbConnection = require("./config/dbConnection");
 
-//connect to DB
 dbConnection();
-
-const app = express();
-
-//middlewares
-app.post('/webhook', express.raw({type: 'application/json'}) , checkoutWebhook); //?
-app.use(express.json());
-app.use(cors());
-app.options('*', cors());
-app.use(compression());
+const PORT = process.env.PORT || 5000;
+const app = createApp();
 
 
-
-app.use(express.static(path.join(__dirname, 'uploads'))); //?
-
-if (process.env.ENVIRONMENT === "developement") {
-  app.use(morgan("tiny"));
-}
-
-//Mount Routes
-mounteRoutes(app);
-
-app.all("*", (req, res, next) => {
-  return next(new ApiError("This route not found", 404));
-});
-
-//Global globalError handler
-app.use(errorMiddleware);
-
-const PORT = process.env.PORT || 5000; 
 const server = app.listen(PORT, () => {
   console.log(`app connected to port ${PORT}`);
-}); 
+});
 
 //Handle errors outside express
 process.on("uncaughtException", (err) => {
   console.error(`Unhandled Rejection: ${err.name} | ${err.message}`);
   //server.close() waits for pending requests and then close
-  server.close(()=>{
-    console.log('Shutting down!');
+  server.close(() => {
+    console.log("Shutting down!");
     process.exit(1);
   });
 });
