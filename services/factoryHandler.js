@@ -24,28 +24,41 @@ exports.updateOne = (Model) =>
     res.status(200).json({ status: "success", data: document });
   });
 
-
 exports.createOne = (Model, modelName = "") =>
-asyncHandler(async (req, res, next) => {
-  if (modelName === "Review") req.body.slug = slugify(req.body.review);
-  else req.body.slug = slugify(req.body.name);
+  asyncHandler(async (req, res, next) => {
+    if (modelName === "Review") req.body.slug = slugify(req.body.review);
+    else req.body.slug = slugify(req.body.name);
 
-  const document = await Model.create(req.body);
-  res.status(201).json({ status: "success", data: document });
-});
+    const document = await Model.create(req.body);
+    res.status(201).json({ status: "success", data: document });
+  });
 
 exports.getOne = (Model, populateOption = "") =>
   asyncHandler(async (req, res, next) => {
+    req.sessionStore.get(req.session.id, (err, sessionData) => {
+      if (err) throw err;
+      console.log(sessionData);
+    });
     const query = Model.findById(req.params.id);
     query.populate(populateOption); //?
     const document = await query;
     if (!document)
       return next(new ApiError(`No document found for ${req.params.id}`, 404));
-    res.status(200).json({ data: document });
+    if (req.signedCookies.name && req.signedCookies.name === "ali")
+      res.status(200).json({ data: document });
+    else res.status(403).send({ message: "enter a valid cookie" });
   });
 
 exports.getAll = (Model, modelName = "") =>
   asyncHandler(async (req, res, next) => {
+    req.sessionStore.get(req.session.id, (err, sessionData) => {
+      if (err) throw err;
+      console.log(sessionData);
+    });
+    
+    req.session.visited = true;
+    if (!req.session.user) return next(new ApiError(`Not authorized`, 401));
+
     let filterObj = {};
     if (req.filterObj) filterObj = req.filterObj;
     const countDocs = await Model.countDocuments();
@@ -58,7 +71,7 @@ exports.getAll = (Model, modelName = "") =>
 
     const { mongooseQuery, paginationInfo } = apiFeatures;
     const documents = await mongooseQuery;
-    
+    res.cookie("name", "ali", { maxAge: 60000, signed: true });
     res
       .status(200)
       .json({ results: documents.length, paginationInfo, data: documents });

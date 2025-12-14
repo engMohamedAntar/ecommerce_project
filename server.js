@@ -6,10 +6,11 @@ const createApp = require("./createApp");
 //routes
 const dbConnection = require("./config/dbConnection");
 
+
 dbConnection();
 const PORT = process.env.PORT || 5000;
-const app = createApp();
 
+const app = createApp();
 
 const server = app.listen(PORT, () => {
   console.log(`app connected to port ${PORT}`);

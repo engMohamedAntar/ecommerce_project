@@ -11,16 +11,20 @@ const ApiError = require("./utils/apiError");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 const compression = require("compression");
 const mounteRoutes = require("./routes");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
 
 function createApp() {
   const app = express();
-  //middlewares
-  app.post(
-    "/webhook",
-    express.raw({ type: "application/json" }),
-    checkoutWebhook
+  app.use(cookieParser("my-secret"));
+  app.use(
+    session({
+      secret: "session secret",
+      saveUninitialized: false,
+      resave: false,
+      cookie: { maxAge: 60000 * 60 },
+    })
   );
-
   app.use(express.json());
   app.use(cors());
   app.options("*", cors());
@@ -34,6 +38,11 @@ function createApp() {
 
   //Mount Routes
   mounteRoutes(app);
+  app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    checkoutWebhook
+  );
 
   app.all("*", (req, res, next) => {
     return next(new ApiError("This route not found", 404));
