@@ -51,14 +51,6 @@ exports.getOne = (Model, populateOption = "") =>
 
 exports.getAll = (Model, modelName = "") =>
   asyncHandler(async (req, res, next) => {
-    req.sessionStore.get(req.session.id, (err, sessionData) => {
-      if (err) throw err;
-      console.log(sessionData);
-    });
-    
-    req.session.visited = true;
-    if (!req.session.user) return next(new ApiError(`Not authorized`, 401));
-
     let filterObj = {};
     if (req.filterObj) filterObj = req.filterObj;
     const countDocs = await Model.countDocuments();
@@ -71,7 +63,6 @@ exports.getAll = (Model, modelName = "") =>
 
     const { mongooseQuery, paginationInfo } = apiFeatures;
     const documents = await mongooseQuery;
-    res.cookie("name", "ali", { maxAge: 60000, signed: true });
     res
       .status(200)
       .json({ results: documents.length, paginationInfo, data: documents });

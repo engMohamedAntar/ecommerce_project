@@ -13,6 +13,7 @@ const compression = require("compression");
 const mounteRoutes = require("./routes");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const passport = require("passport");
 
 function createApp() {
   const app = express();
@@ -25,6 +26,8 @@ function createApp() {
       cookie: { maxAge: 60000 * 60 },
     })
   );
+  app.use(passport.initialize());
+  app.use(passport.session());
   app.use(express.json());
   app.use(cors());
   app.options("*", cors());

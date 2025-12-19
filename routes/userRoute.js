@@ -22,19 +22,18 @@ const {
   changePasswordValidator,
   changeMyPasswordValidator,
 } = require("../utils/validators/userValidator");
-const { protect, allowedTo } = require("../services/authService");
+// const { protect, allowedTo } = require("../services/authService");
+const protect= require('../protect');
 
 const router = express.Router();
-
-router.use(protect);
 router.get("/getme", getLoggedUser, getUserValidator, getUser);
 router.put("/changemypassword", changeMyPasswordValidator, changeMyPassword);
 router.put("/updatemydata", uploadImage, resizeImage, updateLoggedUserData, updateUserValidator, updateUser);
 router.delete("/deactivateme", deactivateMe );
 
-router.use(allowedTo("admin"));
+// router.use(allowedTo("admin"));
 router.post("/", uploadImage, resizeImage, createUserValidator, createUser);
-router.get("/", getUsers);
+router.get("/",protect, getUsers);
 router.get("/:id", getUserValidator, getUser);
 router.put("/:id", uploadImage, resizeImage, updateUserValidator, updateUser);
 router.delete("/:id", deleteUserValidator, deleteUser);
