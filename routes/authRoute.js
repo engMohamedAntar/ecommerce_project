@@ -22,13 +22,17 @@ router.post("/signup", uploadImage, resizeImage, signUpValidator, signUp);
 // router.post("/login", logInValidator, logIn);
 
 //login using passport
-router.post(
-  "/login",
-  passport.authenticate("local"),
-  (req, res) => {
-    res.json({ user: req.user });
-  }
-);
+router.post("/login", passport.authenticate("local"), (req, res) => {
+  res.json({ user: req.user });
+});
+
+router.post("/logout", (req, res, next) => {
+  if (!req.user) return res.sendStatus(401);
+  req.logOut((err) => {
+    if (err) return res.sendStatus(400);
+    res.send(200);
+  });
+});
 
 router.post("/forgotpassword", forgotPassword);
 router.post("/verifyresetcode", verifyResetCode);
