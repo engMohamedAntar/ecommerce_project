@@ -53,9 +53,7 @@ exports.logIn = async (req, res, next) => {
     return next(new ApiError("invalid email or password", 401));
   //create a token
   const token = createJWT({ id: user._id });
-  req.session.user= user;
-  console.log(req.session.id);
-  
+
   res.status(200).json({ data: user, token });
 };
 

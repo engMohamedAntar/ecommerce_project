@@ -84,8 +84,8 @@ exports.changePassword = asyncHandler(async (req, res, next) => {
 // @desc getLoggedUser data
 // @route PUT api/v1/users/getme
 // @access protect-user
-exports.getLoggedUser = asyncHandler(async (req, res, next) => {
-  req.params.id = req.user._id;
+exports.getLoggedUser = asyncHandler(async (req, res, next) => {  
+  req.params.id = req.user._id;  
   next();
 });
 

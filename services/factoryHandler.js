@@ -35,18 +35,12 @@ exports.createOne = (Model, modelName = "") =>
 
 exports.getOne = (Model, populateOption = "") =>
   asyncHandler(async (req, res, next) => {
-    req.sessionStore.get(req.session.id, (err, sessionData) => {
-      if (err) throw err;
-      console.log(sessionData);
-    });
     const query = Model.findById(req.params.id);
     query.populate(populateOption); //?
     const document = await query;
     if (!document)
       return next(new ApiError(`No document found for ${req.params.id}`, 404));
-    if (req.signedCookies.name && req.signedCookies.name === "ali")
-      res.status(200).json({ data: document });
-    else res.status(403).send({ message: "enter a valid cookie" });
+    res.status(200).json({ data: document });
   });
 
 exports.getAll = (Model, modelName = "") =>

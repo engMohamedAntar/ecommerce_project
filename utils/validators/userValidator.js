@@ -5,7 +5,7 @@ const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const slugify = require("slugify");
 const ApiError = require("../apiError");
 const User = require("../../models/userModel");
-const Product= require('../../models/productModel');
+const Product = require("../../models/productModel");
 
 exports.getUserValidator = [
   check("id").isMongoId().withMessage("Not a valid mongoId "),
@@ -131,13 +131,16 @@ exports.changeMyPasswordValidator = [
 ];
 
 exports.addProductToWishListValidator = [
-  check("product").notEmpty().withMessage("product is required")
-  .isMongoId().withMessage('product not a valid mongoId')
-  .custom(async(val, {req})=>{
-    const product= await Product.findById(val);
-    if(!product)
-      return Promise.reject(new Error('No product found for this id'));
-    return true;
-  }),
+  check("product")
+    .notEmpty()
+    .withMessage("product is required")
+    .isMongoId()
+    .withMessage("product not a valid mongoId")
+    .custom(async (val, { req }) => {
+      const product = await Product.findById(val);
+      if (!product)
+        return Promise.reject(new Error("No product found for this id"));
+      return true;
+    }),
   validatorMiddleware,
 ];
